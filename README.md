@@ -28,8 +28,7 @@ The above code will print:
 
 ## Todo
 
-- [x] MVP 
-    simple unit conversion with the API and configuration for `Mass <-> Volume` conversion.
-- [] implement bulk density (to convert `Mass <-> Volume`).
-- [] add support for creating custom definitions.
+- [x] MVP (simple unit conversion with the API and configuration for `Mass <-> Volume` conversion).
+- [ ] implement bulk density (to convert `Mass <-> Volume`).
+- [ ] add support for creating custom definitions.
 
