@@ -2,9 +2,9 @@
   "name": "food-units-converter",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "siddhantk232 <siddhantk232@gmail.com>",
