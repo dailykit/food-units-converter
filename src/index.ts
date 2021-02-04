@@ -17,7 +17,7 @@
  *
  */
 
-type UnitString = "g" | "mg" | "kg" | "ounce" | "l" | "ml";
+type UnitString = "g" | "mg" | "kg" | "oz" | "l" | "ml";
 
 type UnitObject = {
   name: {
@@ -65,9 +65,9 @@ const definition: Definition = {
     base: "g",
     factor: 1 / 1000,
   },
-  ounce: {
+  oz: {
     name: {
-      abbr: "ounce",
+      abbr: "oz",
       singular: "Ounce",
       plural: "Ounces",
     },
