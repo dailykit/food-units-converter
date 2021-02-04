@@ -13,9 +13,11 @@
  * mass = density * volume
  * weight = mass * g (g = 9.8 or 10)
  *
+ * volume * factor * bulkDensity -> mass (in grams)
+ *
  */
 
-type UnitString = "g" | "mg" | "kg" | "ounce";
+type UnitString = "g" | "mg" | "kg" | "ounce" | "l" | "ml";
 
 type UnitObject = {
   name: {
@@ -25,14 +27,15 @@ type UnitObject = {
   };
   base: UnitString;
   factor: number;
-  bulkDensity?: number;
+  bulkDensity?: number /* only required in volumes */;
+  baseMass?: UnitString /* only required in volumes */;
 };
 
 type ConvertedUnit = UnitObject & {
   value: number;
 };
 
-type Definition = Record<UnitString, UnitObject>;
+type Definition = Record<string, UnitObject>;
 
 const definition: Definition = {
   kg: {
@@ -71,14 +74,46 @@ const definition: Definition = {
     base: "g",
     factor: 28.3495,
   },
+  l: {
+    name: {
+      abbr: "l",
+      singular: "Litre",
+      plural: "Litres",
+    },
+    base: "ml",
+    factor: 1000,
+    bulkDensity: 1,
+    baseMass: "g",
+  },
+  ml: {
+    name: {
+      abbr: "ml",
+      singular: "Millilitre",
+      plural: "Millilitres",
+    },
+    base: "ml",
+    factor: 1,
+    bulkDensity: 1,
+    baseMass: "g",
+  },
 };
 
+/**
+ * Throws Invalid Use Error with a custom message.
+ *
+ * @param {string} message the message to pass in the Error constructor
+ */
 const throwInvalidUseError = (msg: string) => {
   throw new Error(`Invalid Use: ${msg}`);
 };
 
-const throwUnsupportedUnitError = () => {
-  throw new Error(`Invalid Unit: the unit type provided was invalid.`);
+/**
+ * Throws Unsupported Error with a custom message.
+ *
+ * @param {string} unit
+ */
+const throwUnsupportedUnitError = (unit: string) => {
+  throw new Error(`Invalid Unit: ${unit} is unsupported.`);
 };
 
 class Converter {
@@ -101,17 +136,23 @@ class Converter {
     const to = this.getUnit(unit);
 
     if (!to) {
-      throwUnsupportedUnitError();
+      throwUnsupportedUnitError(unit);
       return null;
     }
 
-    if (to.base !== this.fromUnit.base) {
-      throwInvalidUseError(
-        "base unit of from and to must be same. Please check your definitions"
-      );
-      return null;
+    if (to.bulkDensity) {
+      // convert value in mass to volume base
+      if (!this.fromUnit.bulkDensity) {
+        this.value = this.value * to.bulkDensity;
+      }
+    } else {
+      // convert value in volume to mass base
+      if (this.fromUnit.bulkDensity) {
+        this.value = this.fromUnit.bulkDensity * this.value;
+      }
     }
 
+    // case to and from are same types (mass <-> mass or volume <-> volume)
     return {
       ...to,
       // convert this.value to base unit then divide it by to.factor
@@ -124,7 +165,7 @@ class Converter {
       throwInvalidUseError("cannot call from() after calling to().");
 
     this.fromUnit = this.getUnit(unit);
-    if (!this.fromUnit) throwUnsupportedUnitError();
+    if (!this.fromUnit) throwUnsupportedUnitError(unit);
 
     return this;
   }
