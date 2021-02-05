@@ -3,6 +3,7 @@
   "version": "1.0.2",
   "description": "Convert food-related units. Works with mass and volumes.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "jest"
