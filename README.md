@@ -31,7 +31,7 @@ The above code will print:
 - [x] MVP (simple unit conversion with the API and configuration for `Mass <-> Volume` conversion).
 - [x] implement bulk density (to convert `Mass <-> Volume`).
 - [x] setup tests
-- [ ] add support for custom bulkDensity
+- [x] add support for custom bulkDensity
 - [ ] add support for creating custom definitions.
 
 
