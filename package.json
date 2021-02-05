@@ -1,7 +1,7 @@
 {
-  "name": "food-units-converter",
+  "name": "@dailykit/food-units-converter",
   "version": "1.0.0",
-  "description": "",
+  "description": "Convert food-related units. Works with mass and volumes.",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "author": "siddhantk232 <siddhantk232@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "jest": "^26.6.3",
     "typescript": "^4.1.3"
