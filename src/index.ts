@@ -19,6 +19,13 @@
 
 type UnitString = "g" | "mg" | "kg" | "oz" | "l" | "ml";
 
+type Unit =
+  | UnitString
+  | {
+      unit: UnitString;
+      bulkDensity?: number;
+    };
+
 type UnitObject = {
   name: {
     abbr: UnitString;
@@ -28,7 +35,6 @@ type UnitObject = {
   base: UnitString;
   factor: number;
   bulkDensity?: number /* only required in volumes */;
-  baseMass?: UnitString /* only required in volumes */;
 };
 
 type ConvertedUnit = UnitObject & {
@@ -83,7 +89,6 @@ const definition: Definition = {
     base: "ml",
     factor: 1000,
     bulkDensity: 1,
-    baseMass: "g",
   },
   ml: {
     name: {
@@ -94,7 +99,6 @@ const definition: Definition = {
     base: "ml",
     factor: 1,
     bulkDensity: 1,
-    baseMass: "g",
   },
 };
 
@@ -127,16 +131,29 @@ class Converter {
     this.definition = definition;
   }
 
-  to(unit: UnitString): ConvertedUnit | null {
+  to(toUnit: Unit): ConvertedUnit | null {
+    let unitString;
+    let bulkDensity;
+
     if (!this.fromUnit) {
       throwInvalidUseError("you need to call from() before calling to()");
       return null;
     }
 
-    const to = this.getUnit(unit);
+    let to;
+
+    if (typeof toUnit !== "string") {
+      unitString = toUnit.unit;
+      to = this.getUnit(toUnit.unit as UnitString);
+      if (to?.bulkDensity) to.bulkDensity = toUnit.bulkDensity || 1;
+    } else {
+      unitString = toUnit;
+      to = this.getUnit(toUnit as UnitString);
+      if (to?.bulkDensity) to.bulkDensity = bulkDensity;
+    }
 
     if (!to) {
-      throwUnsupportedUnitError(unit);
+      throwUnsupportedUnitError(unitString as string);
       return null;
     }
 
@@ -160,18 +177,29 @@ class Converter {
     };
   }
 
-  from(unit: UnitString) {
+  from(fromUnit: Unit) {
+    let unitString = fromUnit;
+    let bulkDensity = 1;
+
+    if (typeof fromUnit !== "string") {
+      unitString = fromUnit.unit;
+      bulkDensity = fromUnit.bulkDensity || 1;
+    }
+
     if (this.toUnit)
       throwInvalidUseError("cannot call from() after calling to().");
 
-    this.fromUnit = this.getUnit(unit);
-    if (!this.fromUnit) throwUnsupportedUnitError(unit);
+    this.fromUnit = this.getUnit(unitString as UnitString);
+
+    if (!this.fromUnit) throwUnsupportedUnitError(unitString as string);
+
+    if (this.fromUnit?.bulkDensity) this.fromUnit.bulkDensity = bulkDensity;
 
     return this;
   }
 
-  getUnit(unit: UnitString): UnitObject | null {
-    return this.definition[unit];
+  getUnit(toUnit: UnitString): UnitObject | null {
+    return this.definition[toUnit];
   }
 }
 
