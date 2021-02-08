@@ -4,6 +4,8 @@ This library provides a nice API to convert food related units. You can also
 convert `Mass <-> volume`. For example, converting 10L to 10Kg is possible using
 this library.
 
+> The API is heavily inspired by [units-converter](https://github.com/nosferatoy/units-converter)
+
 ## Usage
 
 ```js
